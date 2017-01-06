@@ -66,13 +66,14 @@ session_opts = {
     'session.data_dir': '/tmp/',
     'session.auto': True
 }
+# read config.ini
+cf = ConfigParser.ConfigParser()
+cf.read('./config.ini')
 
 
 @route('/diff.html', method="POST")
 @view('diff')
 def difflist():
-    cf = ConfigParser.ConfigParser()
-    cf.read('./config.ini')
     exclude_list = cf.get('default', 'exclude').split(',')
     rsyncopts = cf.get('default', 'rsync_opts')
     user = cf.get('default', 'user')
@@ -109,8 +110,8 @@ def difflist():
 @route('/push.html', method="POST")
 @view('push')
 def pushfile():
-    cf = ConfigParser.ConfigParser()
-    cf.read('./config.ini')
+    # cf = ConfigParser.ConfigParser()
+    # cf.read('./config.ini')
     # exclude_list = cf.get('default', 'exclude').split(',')
     rsyncopts = cf.get('default', 'rsync_opts')
     user = cf.get('default', 'user')
@@ -118,7 +119,7 @@ def pushfile():
     # for exlist in exclude_list:
     #     exclude += "--exclude=" + exlist + " "
     pushcontent = request.forms.get('pushfile').strip()
-    ##get exclude file name
+    # get exclude file name
     # excludefile = request.forms.get('excludefile').strip()
     # if excludefile != "":
     #     for exfile in excludefile.strip().split('\r\n'):
@@ -168,8 +169,8 @@ def comparefile():
         targethost = destdir.split(":")[0]
         filename = request.GET.get('filename')
         if os.path.isfile(filename):
-            cf = ConfigParser.ConfigParser()
-            cf.read('./config.ini')
+            # cf = ConfigParser.ConfigParser()
+            # cf.read('./config.ini')
             user = cf.get('default', 'user')
             fileExiststr = "ssh " + targethost + " -l " + user + " [ -f " + filename + " ]"
             returnstatus = subprocess.call(fileExiststr, shell=True)
