@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>code publish | v1.0</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="alternate icon" type="image/png" href="assets/i/favicon.png">
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/amazeui.min.js"></script>
+    <script src="assets/js/layer.js"></script>
+    <link rel="stylesheet" href="assets/css/amazeui.min.css"/>
+    <style>
+        .header {
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 200%;
+            color: #333;
+            margin-top: 30px;
+        }
+
+        .header p {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="am-g">
+        <h1>乐来代码发布v1.0</h1>
+        <p>^ ^ .此页面将输入的目录做差异对比,请注意输入正确的路径. ^ ^</p>
+    </div>
+    <hr/>
+</div>
+<div class="am-g">
+    <div class="am-u-lg-6 am-u-md-8 am-u-sm-centered">
+        <h3>One Step</h3>
+        <hr>
+        <div class="am-btn-group">
+            <a href="#" class="am-btn am-btn-secondary am-btn-sm"><i class="am-icon-github am-icon-sm"></i> Github</a>
+            <a href="#" class="am-btn am-btn-success am-btn-sm"><i class="am-icon-google-plus-square am-icon-sm"></i>
+                Google+</a>
+            <a href="#" class="am-btn am-btn-primary am-btn-sm"><i class="am-icon-stack-overflow am-icon-sm"></i>
+                stackOverflow</a>
+        </div>
+        <br>
+        <br>
+
+        <form method="post" class="am-form" action='diff.html'>
+            <label for="email">本地路径:</label>
+            <div class="am-input-group am-input-group-primary">
+                <span class="am-input-group-label"><i class="am-icon-location-arrow am-icon-fw"></i></span>
+                <input type="text" class="am-form-field" name="targetdir" id="targetdir"
+                       placeholder="请输入源地址路径, example: /home/www/" required="true">
+            </div>
+            <br>
+            <label for="password">线上路径:</label>
+            <div class="am-input-group am-input-group-primary">
+                <span class="am-input-group-label"><i class="am-icon-location-arrow am-icon-fw"></i></span>
+                <input type="text" class="am-form-field" name="destdir" id="destdir"
+                       placeholder="请输入目标地址路径, example: 192.168.1.1:/home/www/" required="true">
+            </div>
+            <div>
+                <label for="doc-ta-1">指定排除的文件</label>
+                <textarea class="comments" name="excludefile" rows="6" id="doc-ta-1"></textarea>
+                <p class="am-kai">
+                    <i class="am-icon-cog am-icon-spin"></i>
+                    排除规则一行一个,不要一行多个!!
+                </p>
+            </div>
+            <p class="am-kai">
+                <i class="am-icon-cog am-icon-spin"></i>
+                注意目录的写法,比如同步本地<a>/home/www</a>目录下的内容,要写成<a>/home/www/</a>,如果写成<a>/home/www</a>将同步home/目录下所有内容.
+                <br/>
+                <i class="am-icon-cog am-icon-spin"></i> 默认对比将排除".svn", "*.log"文件,此选项可在conf.ini更改.
+            </p>
+            <br>
+
+            <div class="am-cf">
+                <input type="submit" name="" value="开始对比" class="am-btn am-btn-primary am-btn-sm am-fl">
+                <!--<input type="submit" name="" value="忘记密码 ^_^? " class="am-btn am-btn-default am-btn-sm am-fr">!-->
+            </div>
+        </form>
+        <hr>
+        <p>© 2016 <a>JeremyGao</a>, Inc. Contact: <a>780093098@qq.com</a></p>
+    </div>
+</div>
+<script>
+    //button提交检测目录合法性
+    $(':submit').on('click', function () {
+        var targetdir = $('#targetdir').val();
+        var destdir = $('#destdir').val();
+        if (targetdir.substr(targetdir.length - 1, 1) == "/" && destdir.substr(destdir.length - 1, 1) == "/") {
+            return true;
+        }
+        else {
+            layer.msg('骚年,目录请以"/"结束,谢谢合作!');
+            return false;
+        }
+    });
+</script>
+</body>
+</html>
