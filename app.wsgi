@@ -4,9 +4,12 @@
 import os
 import bottle
 import sys
-import index
 
-sys.path = ['/var/www/html/mypublish'] + sys.path
-os.chdir(os.path.dirname(__file__))
+workdir = os.path.dirname(__file__)
+sys.path = [workdir] + sys.path
+os.chdir(workdir)
+bottle.TEMPLATE_PATH.insert(0, workdir + '/views/')
+
+import index
 
 application = index.myapp

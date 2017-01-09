@@ -55,11 +55,12 @@ def ColordiffsubproPopen(cmdstr1):
 @route('/')
 @view('index')
 def index():
-    pass
+    host = ConfigParser.ConfigParser()
+    host.read('./config.ini')
+    hostlist = cf.get('hosts', 'list')
+    return dict(hostlist=hostlist)
 
 
-# targetdir = ""
-# destdir = ""
 session_opts = {
     'session.type': 'file',
     'session.cookie_expires': 600,
@@ -81,11 +82,15 @@ def difflist():
     exclude = ""
     for exlist in exclude_list:
         exclude += "--exclude=" + exlist + " "
-    # get exclude file name
+    # get exclude file name from index forms
     excludefile = request.forms.get('excludefile').strip()
     if excludefile != "":
         for exfile in excludefile.strip().split('\r\n'):
             exclude += "--exclude=" + '"' + exfile + '"' + " "
+
+    # get selected hostip
+    hostip = request.forms.get('hostip')
+    # print hostip
     # global targetdir
     targetdir = request.forms.get('targetdir')
     # global destdir
@@ -93,11 +98,13 @@ def difflist():
     # session
     sessiondir = request.environ.get('beaker.session')
     # add targetdir and destdir and exclude to session
+    sessiondir['hostip'] = hostip
     sessiondir['targetdir'] = targetdir
     sessiondir['destdir'] = destdir
     sessiondir['exclude'] = exclude
     sessiondir.save()
-    commandrsync = "rsync " + rsyncopts + " " + try_run + " " + exclude + targetdir + " " + user + "@" + destdir
+    commandrsync = "rsync " + rsyncopts + " " + try_run + " " + exclude + targetdir + " " \
+                   + user + "@" + hostip + ":" + destdir
     try:
         syncdirname = os.path.dirname(targetdir)
         difffile = execsubpro(commandrsync).split('\n')
@@ -110,30 +117,20 @@ def difflist():
 @route('/push.html', method="POST")
 @view('push')
 def pushfile():
-    # cf = ConfigParser.ConfigParser()
-    # cf.read('./config.ini')
-    # exclude_list = cf.get('default', 'exclude').split(',')
     rsyncopts = cf.get('default', 'rsync_opts')
     user = cf.get('default', 'user')
-    # exclude = ""
-    # for exlist in exclude_list:
-    #     exclude += "--exclude=" + exlist + " "
     pushcontent = request.forms.get('pushfile').strip()
-    # get exclude file name
-    # excludefile = request.forms.get('excludefile').strip()
-    # if excludefile != "":
-    #     for exfile in excludefile.strip().split('\r\n'):
-    #         exclude += "--exclude=" + '"' + exfile + '"' + " "
     listsyncfile = []
     if len(pushcontent) != 0:
         for pushlist in pushcontent.split('\r\n'):
             sessiondir = request.environ.get('beaker.session')
-            destdir = sessiondir.get('destdir')
-            targethost = destdir.split(":")[0]
+            # destdir = sessiondir.get('destdir')
+            desthost = sessiondir.get('hostip')
             # ----get session exclude ----###
             exclude = sessiondir.get('exclude')
             # 循环执行
-            commandrsync = "rsync " + "-v " + rsyncopts + " " + exclude + pushlist + " " + user + "@" + targethost + ":" + pushlist
+            commandrsync = "rsync " + "-v " + rsyncopts + " " + exclude + pushlist + " " \
+                           + user + "@" + desthost + ":" + pushlist
             try:
                 syncfile = execsubpro(commandrsync).split('\n')
             except Exception, e:
@@ -145,11 +142,12 @@ def pushfile():
     else:
         sessiondir = request.environ.get('beaker.session')
         destdir = sessiondir.get('destdir')
-        targethost = destdir.split(":")[0]
+        desthost = sessiondir.get('hostip')
         targetdir = sessiondir.get('targetdir')
         # ----get session exclude ----###
         exclude = sessiondir.get('exclude')
-        commandrsync = "rsync " + "-v " + rsyncopts + " " + exclude + targetdir + " " + user + "@" + targethost + ":" + targetdir
+        commandrsync = "rsync " + "-v " + rsyncopts + " " + exclude + targetdir + " " \
+                       + user + "@" + desthost + ":" + destdir
         try:
             syncfile = execsubpro(commandrsync).split('\n')
         except Exception, e:
@@ -166,16 +164,14 @@ def comparefile():
     if request.GET.get('filename'):
         sessiondir = request.environ.get('beaker.session')
         destdir = sessiondir.get('destdir')
-        targethost = destdir.split(":")[0]
+        desthost = sessiondir.get('hostip')
         filename = request.GET.get('filename')
         if os.path.isfile(filename):
-            # cf = ConfigParser.ConfigParser()
-            # cf.read('./config.ini')
             user = cf.get('default', 'user')
-            fileExiststr = "ssh " + targethost + " -l " + user + " [ -f " + filename + " ]"
+            fileExiststr = "ssh " + desthost + " -l " + user + " [ -f " + filename + " ]"
             returnstatus = subprocess.call(fileExiststr, shell=True)
             if returnstatus == 0:
-                cmdstr1 = "ssh " + user + "@" + targethost + " cat " + filename
+                cmdstr1 = "ssh " + user + "@" + desthost + " cat " + filename
                 remotefile = execsubproPopen(cmdstr1)
                 if os.path.isfile(remotefile):
                     diffcmdstr = "git diff --color " + remotefile + " " + filename
