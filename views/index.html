@@ -56,7 +56,12 @@
             <div class="am-input-group am-input-group-primary">
                 <span class="am-input-group-label"><i class="am-icon-location-arrow am-icon-fw"></i></span>
                 <input type="text" class="am-form-field" name="targetdir" id="targetdir"
-                       placeholder="此处输入本地代码路径, example: /home/www/" required="true">
+                       placeholder="此处输入本地代码路径, example: /home/www/" required="true" style="width: 50%">
+                <div class="am-animation-slide-right" style="float: right">
+                    <label>点击按钮检出代码:</label>
+                    <button type="button" class="am-btn am-btn-secondary" id="svnupdate">Svn UP</button>
+                    <button type="button" class="am-btn am-btn-secondary">Git PU</button>
+                </div>
             </div>
             <br>
             <label for="password">线上路径:</label>
@@ -64,7 +69,7 @@
                 <span class="am-input-group-label"><i class="am-icon-location-arrow am-icon-fw"></i></span>
                 <input type="text" class="am-form-field" name="destdir" id="destdir"
                        placeholder="此处输入线上代码路径, example: /home/www/" required="true" style="width:50%">
-                <div style="float: right"><label>选择发布主机:</label>
+                <div class="am-animation-slide-right" style="float: right"><label>选择发布主机:</label>
                     <select data-am-selected="{btnStyle: 'secondary'}" name="hostip">
                         %for host in hostlist.strip().split():
                         <option value="{{ host }}">{{ host }}</option>
@@ -106,6 +111,27 @@
         else {
             layer.msg('骚年,目录请以"/"结束,谢谢合作!');
             return false;
+        }
+    });
+</script>
+<script>
+    //svn up
+    $('#svnupdate').on('click', function () {
+        var targetdir = $('#targetdir').val();
+        if (targetdir == "") {
+            layer.msg('骚年,不要心急,先填写SVN UP目录好吗?');
+            return false;
+        }
+        else {
+            layer.open({
+                type: 2,
+                title: '----svn update by jeremy gao----',
+                maxmin: true,
+                shadeClose: true,
+                area: ['1024px', '768px'],
+                //content: $(this).attr('value')
+                content: "svnupdate.html&" + targetdir
+            });
         }
     });
 </script>

@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-
-from bottle import view, run, static_file, route, request, default_app
-import subprocess, ConfigParser, os
-from beaker.middleware import SessionMiddleware
-
-
+# 保留destdir输入是为了保证本地和线上路径不一致以及不同版本之间的对比.
 # rsync -ac --list-only --delete --links --copy-links --exclude=".svn" --exclude=".log" /home/www /home/mnt
+from bottle import view, run, static_file, route, request, default_app
+from beaker.middleware import SessionMiddleware
+from PublishModule import ExistCommand
+import subprocess
+import ConfigParser
+import os
+
 
 @route('/assets/js/skin/default/<filepath:path>')
 def static_filepath(filepath):
@@ -43,8 +45,14 @@ def execsubproPopen(cmdstr1):
 
 def ColordiffsubproPopen(cmdstr1):
     try:
+        # get ansi2html.sh parent path
+        current_path = os.path.dirname(__file__)
+        # get bash environment
+        bash_shell = os.environ.get('SHELL')
+        # get ansi2html.sh path
+        gitdiffhtml = bash_shell + " " + current_path + '/ansi2html.sh'
         child1 = subprocess.Popen(cmdstr1, shell=True, stdout=subprocess.PIPE)
-        child2 = subprocess.Popen('bash ./ansi2html.sh', shell=True, stdin=child1.stdout, stdout=subprocess.PIPE)
+        child2 = subprocess.Popen(gitdiffhtml, shell=True, stdin=child1.stdout, stdout=subprocess.PIPE)
         returncode = child2.communicate()
     except Exception, e:
         returncode = e
@@ -90,7 +98,6 @@ def difflist():
 
     # get selected hostip
     hostip = request.forms.get('hostip')
-    # print hostip
     # global targetdir
     targetdir = request.forms.get('targetdir')
     # global destdir
@@ -186,6 +193,17 @@ def comparefile():
     else:
         returndiff = "骚年,没有获取到要对比的文件，或者对比文件无效!!!!"
         return dict(returndiff=returndiff)
+
+
+@route('/svnupdate.html&<dirpath:path>')
+@view('svnupdate')
+def svnupdate(dirpath):
+    if os.path.isdir(dirpath):
+        # svn up /home/jeremy/svntestdir/ --username gaoqiang --password 123456
+        existcmd = ExistCommand.ExistCommand('svn')
+        print existcmd.existcomand()
+    else:
+        return dict(dirpath="别逗了!目录不存在你让我update什么--.")
 
 
 myapp = SessionMiddleware(default_app(), session_opts)
