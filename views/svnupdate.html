@@ -7,7 +7,14 @@
 </head>
 <body>
 <div>
+    %if defined('dirpath'):
     <pre>{{ dirpath }}</pre>
+    %end
+    <br>
+    %if defined('retuncode'):
+    <pre>{{ retuncode }}</pre>
+    %end
+
 </div>
 </body>
 </html>

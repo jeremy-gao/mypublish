@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>code publish | v1.0</title>
+    <title>code publish | v2.0</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="format-detection" content="telephone=no">
@@ -32,7 +32,7 @@
 <body>
 <div class="header">
     <div class="am-g">
-        <h1>乐来代码发布v1.0</h1>
+        <h1>乐来代码发布v2.0</h1>
         <p>^ ^ .此页面将输入的目录做差异对比,请注意输入正确的路径. ^ ^</p>
     </div>
     <hr/>
@@ -41,22 +41,32 @@
     <div class="am-u-lg-6 am-u-md-8 am-u-sm-centered">
         <h3>One Step</h3>
         <hr>
+        <!--
         <div class="am-btn-group">
             <a href="#" class="am-btn am-btn-secondary am-btn-sm"><i class="am-icon-github am-icon-sm"></i> Github</a>
             <a href="#" class="am-btn am-btn-success am-btn-sm"><i class="am-icon-google-plus-square am-icon-sm"></i>
                 Google+</a>
             <a href="#" class="am-btn am-btn-primary am-btn-sm"><i class="am-icon-stack-overflow am-icon-sm"></i>
                 stackOverflow</a>
-        </div>
+        </div> -->
         <br>
-        <br>
-
         <form method="post" class="am-form" action='diff.html'>
             <label for="email">本地路径:</label>
             <div class="am-input-group am-input-group-primary">
                 <span class="am-input-group-label"><i class="am-icon-location-arrow am-icon-fw"></i></span>
+                <!--
                 <input type="text" class="am-form-field" name="targetdir" id="targetdir"
-                       placeholder="此处输入本地代码路径, example: /home/www/" required="true" style="width: 50%">
+                       placeholder="此处输入本地代码路径, example: /home/www/" required="true" style="width: 50%">-->
+                <select data-am-selected="{btnWidth: '50%'}" id="targetdir" name="targetdir" required>
+                    <option value="">请选择</option>
+                    %for appname in appdict.keys():
+                    <optgroup label="--{{ appname.capitalize() }}--" name="{{ appname }}">
+                        %for appv in appdict.get(appname):
+                        <option value="{{ apppath }}{{ appname }}/{{ appv }}/">{{appname}}@{{ appv }}</option>
+                        %end
+                    </optgroup>
+                    %end
+                </select>
                 <div class="am-animation-slide-right" style="float: right">
                     <label>点击按钮检出代码:</label>
                     <button type="button" class="am-btn am-btn-secondary" id="svnupdate">Svn UP</button>
@@ -98,9 +108,11 @@
         </form>
         <hr>
         <p>© 2016 <a>JeremyGao</a>, Inc. Contact: <a>780093098@qq.com</a></p>
+        {{ ! hiddenp }}
     </div>
 </div>
 <script>
+
     //button提交检测目录合法性
     $(':submit').on('click', function () {
         var targetdir = $('#targetdir').val();
@@ -119,7 +131,7 @@
     $('#svnupdate').on('click', function () {
         var targetdir = $('#targetdir').val();
         if (targetdir == "") {
-            layer.msg('骚年,不要心急,先填写SVN UP目录好吗?');
+            layer.msg('骚年,不要心急,先选择SVN UP目录好吗?');
             return false;
         }
         else {
@@ -132,6 +144,25 @@
                 //content: $(this).attr('value')
                 content: "svnupdate.html&" + targetdir
             });
+        }
+    });
+</script>
+<script>
+    //select change event
+    $('#targetdir').on('change', function (a, b, c) {
+        var targetdir = $('#targetdir').val();
+        if (targetdir == "") {
+            layer.msg('骚年,你还没有下拉选择对应发布版本!');
+            return false;
+        }
+        else {
+            //bound destdir text value
+            $('#destdir').attr('value', targetdir);
+            //get select optgroup
+            var optgroup = $('#targetdir').find("[value='" + targetdir + "']").parent().attr('name');
+            //bound textarea value
+            console.log($('#'+optgroup+'_exclude'))
+            $('.comments').val($('#'+optgroup+'_exclude').attr('data'));
         }
     });
 </script>

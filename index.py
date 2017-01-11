@@ -65,8 +65,30 @@ def ColordiffsubproPopen(cmdstr1):
 def index():
     host = ConfigParser.ConfigParser()
     host.read('./config.ini')
-    hostlist = cf.get('hosts', 'list')
-    return dict(hostlist=hostlist)
+    hostlist = host.get('hosts', 'list')
+    apppath = host.get('app', 'path')
+    # -- get exclude_groups --
+    exclude_groups = host.options('exclude_groups')
+    hiddenp = ""
+    for group in exclude_groups:
+        hiddenp += '<p id="' + group + '" data="' + host.get('exclude_groups', group).replace(" ", "\n") + '"> </p>'
+    # core_exclude = host.get('core', 'exclude')
+    # customer_exclude = host.get('customer', 'exclude')
+    # finance_exclude = host.get('finance', 'exclude')
+    # merchant_exclude = host.get('merchant', 'exclude')
+    # route_exclude = host.get('route', 'exclude')
+    # slim_exclude = host.get('slim', 'exclude')
+    appdict = {}
+    appversionlist = []
+    for appname in os.listdir(apppath):
+        # print apppath + appname
+        for appversion in os.listdir(apppath + appname):
+            if len(appversion) > 0:
+                appversionlist.append(appversion)
+        # print appversionlist
+        appdict[appname] = appversionlist
+        appversionlist = []
+    return dict(hostlist=hostlist, appdict=appdict, apppath=apppath, hiddenp=hiddenp)
 
 
 session_opts = {
@@ -199,11 +221,26 @@ def comparefile():
 @view('svnupdate')
 def svnupdate(dirpath):
     if os.path.isdir(dirpath):
-        # svn up /home/jeremy/svntestdir/ --username gaoqiang --password 123456
+        # sudo root nopasswd
+        # sudo svn up /home/www/svn/core/v2.3.5/ --username xxx --password xxx
         existcmd = ExistCommand.ExistCommand('svn')
-        print existcmd.existcomand()
+        if existcmd:
+            # svn_url = cf.get('svn', 'svn_url')
+            username = cf.get('svn', 'username')
+            password = cf.get('svn', 'password')
+            svnupcmd = "sudo svn up " + dirpath + " --username " + username + " --password " + password
+            # print svnupcmd
+            try:
+                retuncode = execsubpro(svnupcmd)
+            except Exception, e:
+                return dict(retuncode=e)
+            else:
+                return dict(retuncode=retuncode)
+
+        else:
+            return dict(dirpath="别逗了!根本没有svn命令,请先安装subversion软件--.")
     else:
-        return dict(dirpath="别逗了!目录不存在你让我update什么--.")
+        return dict(dirpath="别逗了!目录不存在,你让我update什么--.")
 
 
 myapp = SessionMiddleware(default_app(), session_opts)
