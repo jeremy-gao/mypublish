@@ -46,11 +46,11 @@ def execsubproPopen(cmdstr1):
 def ColordiffsubproPopen(cmdstr1):
     try:
         # get ansi2html.sh parent path
-        current_path = os.path.dirname(__file__)
+        current_path = os.path.abspath('.')
         # get bash environment
-        bash_shell = os.environ.get('SHELL')
+        # bash_shell = os.environ.get('SHELL')
         # get ansi2html.sh path
-        gitdiffhtml = bash_shell + " " + current_path + '/ansi2html.sh'
+        gitdiffhtml = "bash" + " " + current_path + '/ansi2html.sh'
         child1 = subprocess.Popen(cmdstr1, shell=True, stdout=subprocess.PIPE)
         child2 = subprocess.Popen(gitdiffhtml, shell=True, stdin=child1.stdout, stdout=subprocess.PIPE)
         returncode = child2.communicate()
@@ -228,7 +228,7 @@ def svnupdate(dirpath):
             # svn_url = cf.get('svn', 'svn_url')
             username = cf.get('svn', 'username')
             password = cf.get('svn', 'password')
-            svnupcmd = "sudo svn up " + dirpath + " --username " + username + " --password " + password
+            svnupcmd = "export LC_ALL=zh_CN.UTF-8;sudo svn up " + dirpath + " --username " + username + " --password " + password
             # print svnupcmd
             try:
                 retuncode = execsubpro(svnupcmd)
