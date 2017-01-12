@@ -3,8 +3,8 @@ mypublish是一个web可视化代码发布工具.
 
 # 页面预览
 --------------
-![image](https://github.com/jeremy-gao/myhead/blob/master/assets/i/1.png)
-![image](https://github.com/jeremy-gao/myhead/blob/master/assets/i/2.png)
+![image](https://github.com/jeremy-gao/mypublish/blob/master/assets/i/1.png)
+![image](https://github.com/jeremy-gao/mypublish/blob/master/assets/i/2.png)
 
 # 功能介绍
 ---------------
