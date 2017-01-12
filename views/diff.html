@@ -72,11 +72,8 @@
                         <div class="am-form-group">
                             <label for="doc-ta-1">指定推送的文件</label>
                             <textarea class="comments" name="pushfile" rows="6" id="doc-ta-11"></textarea>
-                            <!--
-                           <label for="doc-ta-1">指定排除的文件</label>
-                           <textarea class="comments" name="excludefile"  rows="6" id="doc-ta-12"></textarea>
-                           -->
-                            <p><input type="submit" name="" value="指定提交" class="am-btn am-btn-primary am-btn-sm am-fl">
+                            <p><input type="submit" id="textsubmit" value="确认提交"
+                                      class="am-btn am-btn-primary am-btn-sm am-fl">
                             </p>
                         </div>
                     </form>
@@ -128,6 +125,20 @@
             area: ['1024px', '768px'],
             content: $(this).attr('value')
         });
+    });
+</script>
+<script>
+    //button提交验证
+    $('#textsubmit').on('click', function () {
+        var pushcontent = $('.comments').val();
+        if (pushcontent == "") {
+            //询问
+            if (window.confirm('没有指定提交文件,你确定要全部提交吗？')) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     });
 </script>
 </body>
