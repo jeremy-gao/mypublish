@@ -48,8 +48,6 @@ def ColordiffsubproPopen(cmdstr1):
         # get ansi2html.sh parent path
         current_path = os.path.abspath('.')
         # get bash environment
-        # bash_shell = os.environ.get('SHELL')
-        # get ansi2html.sh path
         gitdiffhtml = "bash" + " " + current_path + '/ansi2html.sh'
         child1 = subprocess.Popen(cmdstr1, shell=True, stdout=subprocess.PIPE)
         child2 = subprocess.Popen(gitdiffhtml, shell=True, stdin=child1.stdout, stdout=subprocess.PIPE)
@@ -72,20 +70,12 @@ def index():
     hiddenp = ""
     for group in exclude_groups:
         hiddenp += '<p id="' + group + '" data="' + host.get('exclude_groups', group).replace(" ", "\n") + '"> </p>'
-    # core_exclude = host.get('core', 'exclude')
-    # customer_exclude = host.get('customer', 'exclude')
-    # finance_exclude = host.get('finance', 'exclude')
-    # merchant_exclude = host.get('merchant', 'exclude')
-    # route_exclude = host.get('route', 'exclude')
-    # slim_exclude = host.get('slim', 'exclude')
     appdict = {}
     appversionlist = []
     for appname in os.listdir(apppath):
-        # print apppath + appname
         for appversion in os.listdir(apppath + appname):
-            if len(appversion) > 0:
+            if len(appversion) > 0 and not appversion.startswith('.'):
                 appversionlist.append(appversion)
-        # print appversionlist
         appdict[appname] = appversionlist
         appversionlist = []
     return dict(hostlist=hostlist, appdict=appdict, apppath=apppath, hiddenp=hiddenp)
@@ -192,7 +182,7 @@ def pushfile():
 def comparefile():
     if request.GET.get('filename'):
         sessiondir = request.environ.get('beaker.session')
-        destdir = sessiondir.get('destdir')
+        # destdir = sessiondir.get('destdir')
         desthost = sessiondir.get('hostip')
         filename = request.GET.get('filename')
         if os.path.isfile(filename):
@@ -228,8 +218,8 @@ def svnupdate(dirpath):
             # svn_url = cf.get('svn', 'svn_url')
             username = cf.get('svn', 'username')
             password = cf.get('svn', 'password')
-            svnupcmd = "export LC_ALL=zh_CN.UTF-8;sudo svn up " + dirpath + " --username " + username + " --password " + password
-            # print svnupcmd
+            svnupcmd = "export LC_ALL=zh_CN.UTF-8;sudo svn up " + dirpath + \
+                       " --username " + username + " --password " + password
             try:
                 retuncode = execsubpro(svnupcmd)
             except Exception, e:

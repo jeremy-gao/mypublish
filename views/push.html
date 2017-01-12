@@ -1,84 +1,103 @@
 <!doctype html>
 <html class="no-js">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>code publish | v1.0</title>
-  <meta name="description" content="发布结果返回页面">
-  <meta name="keywords" content="log">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="renderer" content="webkit">
-  <meta http-equiv="Cache-Control" content="no-siteapp" />
-  <link rel="icon" type="image/png" href="assets/i/favicon.png">
-  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
-  <meta name="apple-mobile-web-app-title" content="Amaze UI" />
-  <link rel="stylesheet" href="assets/css/amazeui.min.css"/>
-  <link rel="stylesheet" href="assets/css/admin.css">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>code publish | v1.0</title>
+    <meta name="description" content="发布结果返回页面">
+    <meta name="keywords" content="log">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="icon" type="image/png" href="assets/i/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <link rel="stylesheet" href="assets/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
 <!--[if lte IE 9]>
 <p class="browsehappy">你正在使用<strong>过时</strong>的浏览器，Amaze UI 暂不支持。 请 <a href="http://browsehappy.com/" target="_blank">升级浏览器</a>
-  以获得更好的体验！</p>
+    以获得更好的体验！</p>
 <![endif]-->
 
 
-
 <div class="am-cf admin-main">
-  <!-- sidebar start -->
+    <!-- sidebar start -->
 
-  <!-- sidebar end -->
+    <!-- sidebar end -->
 
-  <!-- content start -->
-  <div class="admin-content">
-    <div class="admin-content-body">
-      <div class="am-cf am-padding am-padding-bottom-0">
-        <div class="am-fl"><strong class="am-text-primary am-text-lg">发布信息</strong> / <small><a href="/">返回首页</a></small></div>
-      </div>
+    <!-- content start -->
+    <div class="admin-content">
+        <div class="admin-content-body">
+            <div class="am-cf am-padding am-padding-bottom-0">
+                <div class="am-fl"><strong class="am-text-primary am-text-lg">发布信息</strong> /
+                    <small><a href="/">返回首页</a></small>
+                </div>
+            </div>
 
-      <hr/>
+            <hr/>
 
-      <div class="am-g error-log">
-        <div class="am-u-sm-12 am-u-sm-centered">
-        <!--<form method="post" class="am-form" action='push.html'> !-->
-        <!-- <pre class="am-pre-scrollable">-->
-        %if defined('listsyncfile'):
-        	%for lines in listsyncfile:
-        		<span class="am-text-success">{{ lines }}</span><br />
-       		%end
-       	%else:
-       		<span class="am-text-success">抱歉，可能有错误发生!或许线上没有存在你要同步文件父的目录!</span>
-		%end
-		<!--
-		<span class="am-text-danger">[error]</span> 
-		[google 123.124.2.2] client denied by server: /export/home/macadmin/testdoc
-		!-->
-        <!--</pre>-->
-        %if defined('returnsucess'):
-        	<p class="am-sans-serif"><i class="am-icon-cog am-icon-spin"></i> {{ returnsucess }}</p>
-        %else:
-        	<p class="am-sans-serif"><i class="am-icon-cog am-icon-spin"></i> !!很遗憾，同步失败!</p>
-        %end
-        <!--
-        <p><input type="submit" name="" value="全部提交" class="am-btn am-btn-primary am-btn-sm am-fl"></p>
-        </forms>
-        -->
-        <br /><br />
+            <div class="am-g error-log">
+                <div class="am-u-sm-12 am-u-sm-centered">
+                    <!--<form method="post" class="am-form" action='push.html'> !-->
+                    <!-- <pre class="am-pre-scrollable">-->
+                    %if defined('listsyncfile'):
+                        %if len(listsyncfile) == 1:
+                            <!--全部提交-->
+                            %i = True
+                            %for lines in listsyncfile[0]:
+                            <span >{{ lines }}</span><br/>
+                                %if i:
+                                    <span class="am-text-success">-------------------分割线------------------</span><br>
+                                    %i = False
+                                %end
+                            %end
+                        %else:
+                            <!--选择组合提交-->
+                            %for lines in listsyncfile:
+                            <span class="am-text-success">{{ lines[0] }}</span><br/>
+                            <span class="am-text-success">-------------------分割线------------------</span><br>
+                            <span class="am-text-success">{{ lines[1] }}</span><br/>
+                            <span class="am-text-success">-------------------分割线------------------</span><br>
+                            <span class="am-text-success">{{ lines[3] }}</span><br/>
+                            %end
+                        %end
+                    %else:
+                    <span class="am-text-success">抱歉，可能有错误发生!或许线上没有存在你要同步文件父的目录!</span>
+                    %end
+                    <!--
+                    <span class="am-text-danger">[error]</span>
+                    [google 123.124.2.2] client denied by server: /export/home/macadmin/testdoc
+                    !-->
+                    <!--</pre>-->
+                    %if defined('returnsucess'):
+                    <p class="am-sans-serif"><i class="am-icon-cog am-icon-spin"></i> {{ returnsucess }}</p>
+                    %else:
+                    <p class="am-sans-serif"><i class="am-icon-cog am-icon-spin"></i> !!很遗憾，同步失败!</p>
+                    %end
+                    <!--
+                    <p><input type="submit" name="" value="全部提交" class="am-btn am-btn-primary am-btn-sm am-fl"></p>
+                    </forms>
+                    -->
+                    <br/><br/>
+                </div>
+            </div>
         </div>
-      </div>
+        <footer class="admin-content-footer">
+            <hr>
+        </footer>
     </div>
-    <footer class="admin-content-footer">
-      <hr>
-    </footer>
-  </div>
-  <!-- content end -->
+    <!-- content end -->
 
 </div>
 
-<a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+<a href="#" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu"
+   data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
 
 <footer>
-  <hr>
-  <p>© 2016 JeremyGao, Inc. Contact: 780093098@qq.com</p>
+    <hr>
+    <p>© 2016 JeremyGao, Inc. Contact: 780093098@qq.com</p>
 </footer>
 
 <!--[if lt IE 9]>
